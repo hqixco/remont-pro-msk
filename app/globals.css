@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&subset=latin,cyrillic");
+@import "tailwindcss";
+
+:root {
+  --background: #f6f1ea;
+  --foreground: #171717;
+  --surface: #fffdfa;
+  --surface-strong: #171411;
+  --accent: #ab8453;
+  --accent-strong: #8f6b3f;
+  --accent-soft: #eadcc8;
+  --line: rgba(23, 23, 23, 0.08);
+  --quiz-bg: #103334;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-line: var(--line);
+  --color-quiz-bg: var(--quiz-bg);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "TikTok Sans", var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(
+  a[href],
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  summary
+) {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  :where(
+      a[href],
+      button,
+      [role="button"],
+      input[type="button"],
+      input[type="submit"],
+      input[type="reset"],
+      summary
+    ):not(:disabled, [aria-disabled="true"]):hover {
+    opacity: 0.94;
+    filter: brightness(0.98);
+    transform: translateY(-1px);
+  }
+}
+
+:where(button, input, textarea, select):disabled,
+:where([aria-disabled="true"]) {
+  cursor: not-allowed;
+}
+
+:where(button, a.inline-flex) {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.08) 34%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+::selection {
+  background: rgba(171, 132, 83, 0.24);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
