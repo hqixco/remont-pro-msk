@@ -8,6 +8,7 @@ import { ProjectsSection } from "@/components/sections/projects-section";
 import { QuizSection } from "@/components/sections/quiz-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { YouTubeSection } from "@/components/sections/youtube-section";
+import { QuickEstimateWidget } from "@/components/widgets/quick-estimate-widget";
 
 export function LandingPage({ content }: { content: SiteContent }) {
   return (
@@ -21,6 +22,7 @@ export function LandingPage({ content }: { content: SiteContent }) {
       <YouTubeSection />
       <ContactsSection />
       <FooterSection />
+      <QuickEstimateWidget />
     </main>
   );
 }
