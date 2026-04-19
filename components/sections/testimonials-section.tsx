@@ -372,7 +372,13 @@ function ReviewsTrack({
       }}
       onPointerDown={(event) => {
         onPointerDown(event.clientX, event.pointerId);
-        event.currentTarget.setPointerCapture(event.pointerId);
+        if (typeof event.currentTarget.setPointerCapture === "function") {
+          try {
+            event.currentTarget.setPointerCapture(event.pointerId);
+          } catch {
+            // Safari on iPhone can reject pointer capture for touch input.
+          }
+        }
       }}
       onPointerMove={(event) => {
         if (swipePointerIdRef.current !== event.pointerId) {
@@ -382,8 +388,15 @@ function ReviewsTrack({
         onPointerMove(event.clientX);
       }}
       onPointerUp={(event) => {
-        if (swipePointerIdRef.current === event.pointerId) {
-          event.currentTarget.releasePointerCapture(event.pointerId);
+        if (
+          swipePointerIdRef.current === event.pointerId &&
+          typeof event.currentTarget.releasePointerCapture === "function"
+        ) {
+          try {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+          } catch {
+            // Ignore unsupported or already-released pointer capture states.
+          }
         }
 
         onPointerEnd();
