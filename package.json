@@ -2,6 +2,13 @@
   "name": "remont-pro-msk",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 111",
+    "safari >= 15.6",
+    "ios_saf >= 15.6"
+  ],
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 --webpack",
     "build": "next build",
