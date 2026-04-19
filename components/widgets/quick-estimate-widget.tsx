@@ -69,9 +69,8 @@ export function QuickEstimateWidget() {
   return (
     <>
       <div className="pointer-events-none fixed bottom-3 right-3 z-[120] w-[calc(100vw-24px)] max-w-[368px] min-[360px]:bottom-4 min-[360px]:right-4 min-[360px]:w-[calc(100vw-32px)] sm:bottom-5 sm:right-5 sm:max-w-[380px]">
-        <div className="pointer-events-auto flex justify-end">
-          {isOpen ? (
-            <div className="w-full overflow-hidden rounded-[24px] border border-[#e7dfd4] bg-[#fffdf9] shadow-[0_24px_60px_rgba(0,0,0,0.14)] sm:rounded-[26px]">
+        {isOpen ? (
+          <div className="pointer-events-auto w-full overflow-hidden rounded-[24px] border border-[#e7dfd4] bg-[#fffdf9] shadow-[0_24px_60px_rgba(0,0,0,0.14)] sm:rounded-[26px]">
               <div className="flex items-start gap-3 border-b border-[#efe7dd] px-4 py-4 sm:gap-4 sm:px-5 sm:py-5">
                 <div className="inline-flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#caa15f] sm:h-[56px] sm:w-[56px]">
                   <Image
@@ -179,8 +178,9 @@ export function QuickEstimateWidget() {
                   <span>Ваши данные защищены</span>
                 </div>
               </div>
-            </div>
-          ) : (
+          </div>
+        ) : (
+          <div className="pointer-events-auto ml-auto w-fit max-w-full">
             <div className="widget-pulse relative flex items-center justify-end gap-3">
 
               <div className="flex h-[52px] max-w-[220px] items-center rounded-full bg-white px-4 text-[13px] font-medium leading-[1.2] text-[#1f1f1f] shadow-[0_14px_34px_rgba(0,0,0,0.12)] min-[360px]:h-[56px] min-[360px]:max-w-[250px] min-[360px]:px-5 min-[360px]:text-[14px] sm:h-[60px] sm:max-w-[290px] sm:px-6 sm:text-[15px]">
@@ -202,8 +202,8 @@ export function QuickEstimateWidget() {
                 />
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {submitted ? (
