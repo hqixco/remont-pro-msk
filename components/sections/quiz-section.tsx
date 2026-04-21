@@ -75,8 +75,17 @@ export function QuizSection({ content }: { content: QuizContent }) {
       id="quiz"
       className="overflow-x-clip px-3 py-8 min-[360px]:px-4 min-[360px]:py-10 sm:px-6 sm:py-12 md:px-6 md:py-12 lg:px-8 lg:py-14 xl:px-10 xl:py-12"
     >
-      <div className="mx-auto grid w-full max-w-6xl gap-5 overflow-hidden rounded-[28px] bg-[linear-gradient(90deg,_#0d2c2c_0%,_#103334_100%)] p-4 text-white min-[360px]:gap-6 min-[360px]:p-5 sm:p-6 md:gap-7 md:p-7 lg:gap-6 lg:p-8 xl:grid-cols-[1fr_560px] xl:gap-8 xl:rounded-[32px] xl:p-10">
-        <div className="min-w-0 space-y-6 text-center xl:text-left">
+      <div className="relative mx-auto grid w-full max-w-6xl gap-5 overflow-hidden rounded-[28px] bg-[linear-gradient(90deg,_#0d2c2c_0%,_#103334_100%)] p-4 text-white min-[360px]:gap-6 min-[360px]:p-5 sm:p-6 md:gap-7 md:p-7 lg:gap-6 lg:p-8 xl:grid-cols-[1fr_560px] xl:gap-8 xl:rounded-[32px] xl:p-10">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(7,31,31,0.84)_0%,rgba(10,39,39,0.76)_28%,rgba(12,41,41,0.68)_52%,rgba(14,46,46,0.62)_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[url('/images/hero-interior.jpg')] bg-cover bg-center opacity-[0.2] saturate-[0.85]"
+        />
+
+        <div className="relative min-w-0 space-y-6 text-center xl:text-left">
           <h2 className="text-[25px] font-semibold leading-[1.08] tracking-tight text-balance sm:text-[25px] md:text-[40px] lg:text-[42px] xl:text-4xl">
             {content.title}
           </h2>
@@ -98,7 +107,7 @@ export function QuizSection({ content }: { content: QuizContent }) {
           </ul>
         </div>
 
-        <div className="min-w-0 overflow-hidden rounded-[24px] bg-[#f7f6f4] p-4 text-center text-zinc-950 min-[360px]:p-5 sm:p-6 md:p-7 xl:rounded-[28px] xl:p-8 xl:text-left">
+        <div className="relative min-w-0 overflow-hidden rounded-[24px] bg-[#f7f6f4] p-4 text-center text-zinc-950 shadow-[0_18px_50px_rgba(0,0,0,0.12)] min-[360px]:p-5 sm:p-6 md:p-7 xl:rounded-[28px] xl:p-8 xl:text-left">
           {submitted ? (
             <div className="space-y-4 rounded-[24px] bg-white p-5 min-[360px]:p-6">
               <h3 className="text-[24px] font-semibold leading-[1.15] min-[360px]:text-[26px]">

@@ -20,6 +20,25 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+For persistent content and case image uploads, configure:
+
+```env
+DATABASE_URL=postgres://user:password@host:5432/database
+DATABASE_SSL_DISABLE=false
+
+S3_ENDPOINT=https://storage.yandexcloud.net
+S3_REGION=ru-central1
+S3_BUCKET=remont-pro-msk
+S3_ACCESS_KEY_ID=your-access-key
+S3_SECRET_ACCESS_KEY=your-secret-key
+S3_PUBLIC_BASE_URL=https://remont-pro-msk.storage.yandexcloud.net
+S3_FORCE_PATH_STYLE=false
+```
+
+`Yandex Object Storage` is S3-compatible, so uploads go through the AWS SDK using these variables.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -1,9 +1,9 @@
 "use client";
 
-import { EstimateModal } from "@/components/modals/estimate-modal";
+import { SuccessGameModal } from "@/components/modals/success-game-modal";
 import { useModalPresence } from "@/components/modals/use-modal-presence";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export type ProjectModalProject = {
   title: string;
@@ -18,6 +18,7 @@ export type ProjectModalProject = {
   about: string;
   workItems: string[];
   ownerLine: string;
+  gallery: string[];
 };
 
 type ProjectModalProps = {
@@ -27,14 +28,6 @@ type ProjectModalProps = {
   onPrevProject: () => void;
   onNextProject: () => void;
 };
-
-const fallbackThumbs = [
-  "/images/projects/project-1.webp",
-  "/images/projects/project-2.webp",
-  "/images/projects/project-3.jpeg",
-  "/images/projects/project-1.webp",
-  "/images/projects/project-2.webp",
-];
 
 const facts = [
   {
@@ -67,8 +60,16 @@ export function ProjectModal({
   onNextProject,
 }: ProjectModalProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isEstimateOpen, setIsEstimateOpen] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const { shouldRender, isVisible } = useModalPresence(isOpen);
+  const totalSlides =
+    project?.gallery.length && project.gallery.length > 0 ? project.gallery.length : 1;
+  const canSubmitEstimate = useMemo(
+    () => phone.replace(/\D/g, "").length >= 10,
+    [phone]
+  );
 
   useEffect(() => {
     if (!shouldRender) return;
@@ -77,9 +78,29 @@ export function ProjectModal({
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-      if (event.key === "ArrowLeft") onPrevProject();
-      if (event.key === "ArrowRight") onNextProject();
+      if (event.key === "Escape") {
+        if (isGalleryOpen) {
+          setIsGalleryOpen(false);
+        } else {
+          onClose();
+        }
+      }
+
+      if (event.key === "ArrowLeft") {
+        if (isGalleryOpen) {
+          setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+        } else {
+          onPrevProject();
+        }
+      }
+
+      if (event.key === "ArrowRight") {
+        if (isGalleryOpen) {
+          setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
+        } else {
+          onNextProject();
+        }
+      }
     };
 
     window.addEventListener("keydown", onKeyDown);
@@ -88,20 +109,35 @@ export function ProjectModal({
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [shouldRender, onClose, onPrevProject, onNextProject]);
+  }, [shouldRender, onClose, onPrevProject, onNextProject, isGalleryOpen, totalSlides]);
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
       setCurrentSlide(0);
+      setIsGalleryOpen(false);
+      setPhone("");
+      setSubmitted(false);
     });
 
     return () => window.cancelAnimationFrame(frameId);
   }, [project, isOpen]);
 
+  const handleSuccessClose = () => {
+    setSubmitted(false);
+    setPhone("");
+    onClose();
+  };
+
   if (!shouldRender || !project) return null;
 
-  const thumbs = [project.image, ...fallbackThumbs.slice(1)];
-  const activeImage = thumbs[currentSlide] ?? project.image;
+  if (submitted) {
+    return <SuccessGameModal isOpen={isOpen} onClose={handleSuccessClose} />;
+  }
+
+  const thumbs = project.gallery.filter(Boolean);
+  const fallbackImage = project.image || null;
+  const galleryImages = thumbs.length > 0 ? thumbs : fallbackImage ? [fallbackImage] : [];
+  const activeImage = galleryImages[currentSlide] ?? galleryImages[0] ?? null;
   const displayedFacts = [
     { ...facts[0], value: project.duration },
     { ...facts[1], value: project.price },
@@ -110,18 +146,28 @@ export function ProjectModal({
   ];
 
   const goPrevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? thumbs.length - 1 : prev - 1));
+    setCurrentSlide((prev) =>
+      prev === 0 ? galleryImages.length - 1 : prev - 1
+    );
   };
 
   const goNextSlide = () => {
-    setCurrentSlide((prev) => (prev === thumbs.length - 1 ? 0 : prev + 1));
+    setCurrentSlide((prev) =>
+      prev === galleryImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const handleEstimateSubmit = () => {
+    if (!canSubmitEstimate) return;
+
+    setSubmitted(true);
   };
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-x-hidden overflow-y-auto">
+    <div className="fixed inset-0 z-[100] overflow-x-hidden overflow-y-auto bg-black/45 backdrop-blur-[2px]">
       <button
         aria-label="Закрыть модальное окно"
-        className={`absolute inset-0 bg-black/45 backdrop-blur-[2px] transition-opacity duration-200 ${
+        className={`fixed inset-0 transition-opacity duration-200 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
         onClick={onClose}
@@ -162,36 +208,53 @@ export function ProjectModal({
           <div className="grid gap-6 px-4 pb-5 pt-14 sm:px-5 sm:pb-6 sm:pt-16 md:gap-7 md:px-6 md:pb-7 min-[1300px]:grid-cols-[706px_1fr] min-[1300px]:gap-[44px] min-[1300px]:px-[40px] min-[1300px]:pb-[26px] min-[1300px]:pt-[38px]">
             <div className="min-w-0">
               <div className="relative h-[220px] overflow-hidden rounded-[22px] bg-white sm:h-[280px] md:h-[340px] min-[1300px]:h-[362px] min-[1300px]:rounded-[28px]">
-                <Image
-                  src={activeImage}
-                  alt={project.imageAlt}
-                  fill
-                  className="object-cover"
-                />
-
                 <button
                   type="button"
-                  className="absolute left-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[28px] text-[#3c3c3c] shadow-[0_6px_18px_rgba(0,0,0,0.12)] sm:left-4 sm:h-11 sm:w-11 sm:text-[30px] min-[1300px]:left-[18px] min-[1300px]:h-[52px] min-[1300px]:w-[52px] min-[1300px]:text-[34px]"
-                  onClick={goPrevSlide}
+                  onClick={() => setIsGalleryOpen(true)}
+                  className="group absolute inset-0 z-[1] block"
+                  aria-label="Открыть галерею проекта"
                 >
-                  ‹
+                  {activeImage ? (
+                    <Image
+                      src={activeImage}
+                      alt={project.imageAlt || project.title || "Изображение проекта"}
+                      fill
+                      className="object-cover transition duration-200 group-hover:scale-[1.02]"
+                    />
+                  ) : null}
+                  <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/18" />
+                  <div className="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/92 text-[22px] text-[#3c3c3c] opacity-0 shadow-[0_6px_18px_rgba(0,0,0,0.12)] transition group-hover:opacity-100 sm:right-4 sm:top-4">
+                    ⌕
+                  </div>
                 </button>
 
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[28px] text-[#3c3c3c] shadow-[0_6px_18px_rgba(0,0,0,0.12)] sm:right-4 sm:h-11 sm:w-11 sm:text-[30px] min-[1300px]:right-[18px] min-[1300px]:h-[52px] min-[1300px]:w-[52px] min-[1300px]:text-[34px]"
-                  onClick={goNextSlide}
-                >
-                  ›
-                </button>
+                {galleryImages.length > 1 ? (
+                  <>
+                    <button
+                      type="button"
+                      className="absolute left-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[28px] text-[#3c3c3c] shadow-[0_6px_18px_rgba(0,0,0,0.12)] sm:left-4 sm:h-11 sm:w-11 sm:text-[30px] min-[1300px]:left-[18px] min-[1300px]:h-[52px] min-[1300px]:w-[52px] min-[1300px]:text-[34px]"
+                      onClick={goPrevSlide}
+                    >
+                      ‹
+                    </button>
+
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[28px] text-[#3c3c3c] shadow-[0_6px_18px_rgba(0,0,0,0.12)] sm:right-4 sm:h-11 sm:w-11 sm:text-[30px] min-[1300px]:right-[18px] min-[1300px]:h-[52px] min-[1300px]:w-[52px] min-[1300px]:text-[34px]"
+                      onClick={goNextSlide}
+                    >
+                      ›
+                    </button>
+                  </>
+                ) : null}
 
                 <div className="absolute bottom-3 left-3 rounded-[14px] bg-black/55 px-3 py-2 text-[13px] font-semibold text-white sm:bottom-4 sm:left-4 sm:text-[14px] min-[1300px]:bottom-[16px] min-[1300px]:left-[18px] min-[1300px]:px-[14px] min-[1300px]:py-[8px] min-[1300px]:text-[16px]">
-                  {currentSlide + 1} / 12
+                  {galleryImages.length > 0 ? currentSlide + 1 : 0} / {galleryImages.length}
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 min-[1300px]:mt-[18px] min-[1300px]:flex min-[1300px]:gap-[12px]">
-                {thumbs.map((src, index) => (
+              <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 min-[1300px]:mt-[18px] min-[1300px]:flex min-[1300px]:flex-wrap min-[1300px]:gap-[12px]">
+                {galleryImages.map((src, index) => (
                   <button
                     key={`${src}-${index}`}
                     type="button"
@@ -225,7 +288,7 @@ export function ProjectModal({
                   {displayedFacts.map((fact) => (
                     <div
                       key={fact.title}
-                    className="flex min-h-[72px] min-w-0 items-start gap-3 rounded-[18px] border border-[#dddddd] bg-white px-4 py-4 min-[1300px]:min-h-[74px] min-[1300px]:px-[18px] min-[1300px]:py-[16px]"
+                      className="flex min-h-[72px] min-w-0 items-start gap-3 rounded-[18px] border border-[#dddddd] bg-white px-4 py-4 min-[1300px]:min-h-[74px] min-[1300px]:px-[18px] min-[1300px]:py-[16px]"
                     >
                       <span className="mt-[2px] flex min-w-[24px] items-center justify-center">
                         <Image
@@ -335,18 +398,32 @@ export function ProjectModal({
                 <div className="grid grid-cols-1 gap-3 min-[1300px]:grid-cols-[1fr_392px] min-[1300px]:gap-[18px]">
                   <input
                     type="tel"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
                     placeholder="+7 (___) ___-__-__"
-                    className="h-[56px] w-full min-w-0 rounded-full border border-[#d9d9d9] bg-white px-5 text-[16px] text-[#444444] outline-none placeholder:text-[#8e8e8e] sm:h-[60px] sm:px-6 sm:text-[17px] min-[1300px]:h-[66px] min-[1300px]:px-[26px] min-[1300px]:text-[20px]"
+                    className="h-[56px] w-full min-w-0 rounded-full border border-[#d9d9d9] bg-white px-5 text-[16px] text-[#444444] outline-none placeholder:text-[#8e8e8e] transition-colors focus:border-[#be995a] sm:h-[60px] sm:px-6 sm:text-[17px] min-[1300px]:h-[66px] min-[1300px]:px-[26px] min-[1300px]:text-[20px]"
                   />
 
                   <button
                     type="button"
-                    onClick={() => setIsEstimateOpen(true)}
-                    className="h-[56px] w-full rounded-full bg-[#be995a] px-5 text-[15px] font-bold text-white transition hover:opacity-95 sm:h-[60px] sm:text-[16px] min-[1300px]:h-[66px] min-[1300px]:px-[28px] min-[1300px]:text-[18px]"
+                    onClick={handleEstimateSubmit}
+                    disabled={!canSubmitEstimate}
+                    className="h-[56px] w-full rounded-full bg-[#be995a] px-5 text-[15px] font-bold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:bg-[#d6cec2] sm:h-[60px] sm:text-[16px] min-[1300px]:h-[66px] min-[1300px]:px-[28px] min-[1300px]:text-[18px]"
                   >
                     Получить расчёт за 24 часа
                   </button>
                 </div>
+
+                {submitted ? (
+                  <div className="mt-3 rounded-[20px] bg-white px-5 py-5 text-left shadow-[0_12px_28px_rgba(0,0,0,0.06)] min-[1300px]:px-6 min-[1300px]:py-6">
+                    <div className="text-[18px] font-extrabold leading-[1.2] text-[#3a3a3a] min-[1300px]:text-[20px]">
+                      Заявка отправлена
+                    </div>
+                    <div className="mt-2 text-[14px] leading-[1.4] text-[#666666] sm:text-[15px] min-[1300px]:text-[16px]">
+                      Мы свяжемся с вами в ближайшее время и подготовим расчет по этому проекту.
+                    </div>
+                  </div>
+                ) : null}
 
                 <div className="mt-3 text-left text-[13px] leading-[1.35] text-[#666666] sm:text-[14px] min-[1300px]:mt-[14px] min-[1300px]:text-[16px] min-[1300px]:leading-[1.25]">
                   Нажимая кнопку, вы соглашаетесь с
@@ -363,10 +440,88 @@ export function ProjectModal({
         </div>
       </div>
 
-      <EstimateModal
-        isOpen={isEstimateOpen}
-        onClose={() => setIsEstimateOpen(false)}
-      />
+      {isGalleryOpen ? (
+        <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/90 px-3 py-3 sm:px-6 sm:py-6">
+          <button
+            type="button"
+            aria-label="Закрыть просмотр фото"
+            onClick={() => setIsGalleryOpen(false)}
+            className="absolute inset-0"
+          />
+
+          <div className="relative z-[1] w-full max-w-[1320px]">
+            <button
+              type="button"
+              aria-label="Закрыть просмотр"
+              onClick={() => setIsGalleryOpen(false)}
+              className="absolute right-2 top-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/92 text-[24px] leading-none text-[#3d3d3d] shadow-[0_10px_30px_rgba(0,0,0,0.18)] transition hover:bg-white sm:right-4 sm:top-4"
+            >
+              ×
+            </button>
+
+            {galleryImages.length > 1 ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Предыдущее фото"
+                  onClick={goPrevSlide}
+                  className="absolute left-2 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/92 text-[30px] leading-none text-[#3d3d3d] shadow-[0_10px_30px_rgba(0,0,0,0.18)] transition hover:bg-white sm:left-4 sm:h-[54px] sm:w-[54px] sm:text-[36px]"
+                >
+                  ‹
+                </button>
+
+                <button
+                  type="button"
+                  aria-label="Следующее фото"
+                  onClick={goNextSlide}
+                  className="absolute right-2 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/92 text-[30px] leading-none text-[#3d3d3d] shadow-[0_10px_30px_rgba(0,0,0,0.18)] transition hover:bg-white sm:right-4 sm:h-[54px] sm:w-[54px] sm:text-[36px]"
+                >
+                  ›
+                </button>
+              </>
+            ) : null}
+
+            <div className="overflow-hidden rounded-[24px] bg-[#111111] px-4 pb-4 pt-14 sm:px-6 sm:pb-6 sm:pt-16">
+              <div className="relative h-[48vh] min-h-[320px] overflow-hidden rounded-[20px] bg-black sm:h-[60vh]">
+                {activeImage ? (
+                  <Image
+                    src={activeImage}
+                    alt={project.imageAlt || project.title || "Изображение проекта"}
+                    fill
+                    className="object-contain"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center px-6 text-center text-[16px] font-medium text-white/70">
+                    Фото проекта не загружено
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                {galleryImages.map((src, index) => (
+                  <button
+                    key={`lightbox-${src}-${index}`}
+                    type="button"
+                    onClick={() => setCurrentSlide(index)}
+                    className={`relative h-[72px] w-[72px] overflow-hidden rounded-[16px] border bg-white/10 sm:h-[88px] sm:w-[88px] ${
+                      index === currentSlide
+                        ? "border-[2px] border-[#c59b5b]"
+                        : "border-white/10"
+                    }`}
+                  >
+                    <Image
+                      src={src}
+                      alt={`Фото ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

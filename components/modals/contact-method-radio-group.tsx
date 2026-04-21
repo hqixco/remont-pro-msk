@@ -73,7 +73,7 @@ function RadioCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex min-h-[60px] w-full min-w-0 items-center justify-between gap-3 rounded-[20px] border px-4 py-3 text-left transition sm:min-h-[64px] min-[1300px]:h-[64px] min-[1300px]:px-[16px] ${
+      className={`flex min-h-[60px] w-full min-w-0 items-center justify-between gap-3 rounded-[360px] border px-4 py-3 text-left transition sm:min-h-[64px] min-[1300px]:h-[64px] min-[1300px]:px-[16px] ${
         checked
           ? "border-[#c79a58] bg-[#f8f2e9]"
           : "border-[#d8d8d8] bg-white"

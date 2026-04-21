@@ -85,11 +85,17 @@ export type QuizContent = {
 export type ProjectItem = {
   title: string;
   location: string;
+  image: string;
+  imageAlt: string;
   price: string;
   duration: string;
   format: string;
   scope: string;
   result: string;
+  about: string;
+  workItems: string[];
+  ownerLine: string;
+  gallery: string[];
 };
 
 export type ProjectsContent = {

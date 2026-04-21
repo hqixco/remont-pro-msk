@@ -17,7 +17,7 @@ export function LandingPage({ content }: { content: SiteContent }) {
       <BenefitsSection />
       <LeadMagnetSection />
       <QuizSection content={content.quiz} />
-      <ProjectsSection />
+      <ProjectsSection content={content.projects} />
       <TestimonialsSection />
       <YouTubeSection />
       <ContactsSection />

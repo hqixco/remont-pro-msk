@@ -177,7 +177,8 @@ export function HeroSection({ priceBadge }: HeroSectionProps) {
                     <button
                       type="button"
                       onClick={() => setIsConsultationOpen(true)}
-                      className="inline-flex h-auto w-fit items-center justify-center self-center rounded-none bg-transparent px-0 text-center text-[14px] font-semibold leading-[1.2] text-[#c19756] underline underline-offset-[4px] transition hover:opacity-80 min-[390px]:text-[15px] md:self-start md:justify-start md:text-[16px] md:text-left"
+                      className="inline-flex h-auto w-fit appearance-none items-center justify-center self-center rounded-none border-0 bg-none px-0 text-center text-[14px] font-semibold leading-[1.2] text-[#c19756] underline decoration-[1px] underline-offset-[4px] shadow-none outline-none transition hover:opacity-80 min-[390px]:text-[15px] md:self-start md:justify-start md:text-[16px] md:text-left"
+                      style={{ WebkitAppearance: "none" }}
                     >
                       Бесплатная консультация
                     </button>
