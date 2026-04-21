@@ -1,3 +1,7 @@
+@import "@fontsource/tiktok-sans/400.css";
+@import "@fontsource/tiktok-sans/500.css";
+@import "@fontsource/tiktok-sans/600.css";
+@import "@fontsource/tiktok-sans/700.css";
 @import "tailwindcss";
 
 :root {
@@ -23,8 +27,8 @@
   --color-line: var(--line);
   --color-quiz-bg: var(--quiz-bg);
   --font-sans:
-    "Segoe UI", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
-    Arial, sans-serif;
+    "TikTok Sans", "Segoe UI", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Arial, sans-serif;
   --font-mono:
     "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas, "Liberation Mono",
     Menlo, monospace;
